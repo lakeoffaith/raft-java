@@ -37,6 +37,7 @@ public class SegmentedLog {
         if (!file.exists()) {
             file.mkdirs();
         }
+        //根据路径渲染SegmentedLog对象，读取到内存中
         readSegments();
         for (Segment segment : startLogIndexSegmentMap.values()) {
             this.loadSegmentData(segment);
@@ -246,6 +247,7 @@ public class SegmentedLog {
             long totalLength = segment.getFileSize();
             long offset = 0;
             while (offset < totalLength) {
+                //log文件直接存储了LogEntry对象，直接读取出来即可
                 RaftProto.LogEntry entry = RaftFileUtils.readProtoFromFile(
                         randomAccessFile, RaftProto.LogEntry.class);
                 if (entry == null) {
@@ -357,6 +359,16 @@ public class SegmentedLog {
 
     public long getTotalSize() {
         return totalSize;
+    }
+
+    public void closeAllSegment(){
+        for (Segment segment : startLogIndexSegmentMap.values()) {
+            try {
+                segment.getRandomAccessFile().close();
+            } catch (IOException e) {
+                LOG.warn("close segment file error, name={}", segment.getFileName());
+            }
+        }
     }
 
 }

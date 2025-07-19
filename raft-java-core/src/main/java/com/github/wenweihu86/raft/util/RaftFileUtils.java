@@ -86,6 +86,7 @@ public class RaftFileUtils {
         try {
             long crc32FromFile = raf.readLong();
             int dataLen = raf.readInt();
+            //已读12字节长度，还需减去文件长度来判断是否足够读取dataLen长度的数据
             int hasReadLen = (Long.SIZE + Integer.SIZE) / Byte.SIZE;
             if (raf.length() - hasReadLen < dataLen) {
                 LOG.warn("file remainLength < dataLen");

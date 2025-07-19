@@ -16,6 +16,9 @@ import java.util.List;
  */
 public class SegmentedLogTest {
 
+
+    //增加单元测试
+
     @Test
     public void testTruncateSuffix() throws IOException {
         String raftDataDir = "./data";
@@ -36,6 +39,9 @@ public class SegmentedLogTest {
         Assert.assertTrue(lastLogIndex == 9);
 
         segmentedLog.truncatePrefix(5);
+
+        //将所以segment文件中的流关闭了，再删除，避免导致oepn的文件无法删除
+        segmentedLog.closeAllSegment();
         FileUtils.deleteDirectory(new File(raftDataDir));
     }
 }
