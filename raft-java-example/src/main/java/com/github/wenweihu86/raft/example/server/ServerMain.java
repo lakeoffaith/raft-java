@@ -11,6 +11,9 @@ import com.github.wenweihu86.raft.service.RaftConsensusService;
 import com.github.wenweihu86.raft.service.impl.RaftClientServiceImpl;
 import com.github.wenweihu86.raft.service.impl.RaftConsensusServiceImpl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +22,23 @@ import java.util.List;
  */
 public class ServerMain {
     public static void main(String[] args) {
-        if (args.length != 3) {
-            System.out.printf("Usage: ./run_server.sh DATA_PATH CLUSTER CURRENT_NODE\n");
-            System.exit(-1);
-        }
+         try {
+            // 在程序启动时强制开放访问权限
+            Class<?> clazz = Class.forName("java.lang.ClassLoader");
+            Field field = clazz.getDeclaredField("defineClass");
+            field.setAccessible(true);
+            
+            // 添加其他需要的反射访问点
+        } catch (Exception ignored) {}
+        // if (args.length != 3) {
+        //     System.out.printf("Usage: ./run_server.sh DATA_PATH CLUSTER CURRENT_NODE\n");
+        //     System.exit(-1);
+        // }
         // parse args
         // raft data dir
-        String dataPath = args[0];
+        String dataPath = "./data";
         // peers, format is "host:port:serverId,host2:port2:serverId2"
-        String servers = args[1];
+        String servers = "localhost:8080:1,localhost:8081:2";
         String[] splitArray = servers.split(",");
         List<RaftProto.Server> serverList = new ArrayList<>();
         for (String serverString : splitArray) {
@@ -35,7 +46,7 @@ public class ServerMain {
             serverList.add(server);
         }
         // local server
-        RaftProto.Server localServer = parseServer(args[2]);
+        RaftProto.Server localServer = parseServer("localhost:8080:1");
 
         // 初始化RPCServer
         RpcServer server = new RpcServer(localServer.getEndpoint().getPort());
