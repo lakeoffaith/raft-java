@@ -8,6 +8,8 @@ import com.github.wenweihu86.raft.proto.RaftProto;
  */
 public interface RaftConsensusService {
 
+    RaftProto.VoteResponse hello(RaftProto.VoteRequest request);
+
     RaftProto.VoteResponse preVote(RaftProto.VoteRequest request);
 
     RaftProto.VoteResponse requestVote(RaftProto.VoteRequest request);
